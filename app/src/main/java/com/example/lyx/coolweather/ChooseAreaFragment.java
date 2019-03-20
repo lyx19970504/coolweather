@@ -1,6 +1,7 @@
 package com.example.lyx.coolweather;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -88,9 +89,23 @@ public class ChooseAreaFragment extends Fragment {
                 if(currentLevel == LEVEL_PROVINCE){
                     selectedProvince = provinces.get(position);
                     queryCities();
-                }else if(currentLevel == LEVEL_CITY){
+                }else if(currentLevel == LEVEL_CITY) {
                     selectCity = cities.get(position);
                     queryCounties();
+                }else if(currentLevel == LEVEL_COUNTY){
+                    String weatherId = counties.get(position).getWeatherId();
+                    if(getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra(WeatherActivity.WEATHER_ID, weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity weatherActivity = (WeatherActivity) getActivity();
+                        weatherActivity.drawerLayout.closeDrawers();
+                        weatherActivity.swipeRefresh.setRefreshing(true);
+                        weatherActivity.weatherId = weatherId;
+                        weatherActivity.requestWeather(weatherId);
+                    }
                 }
             }
         });
